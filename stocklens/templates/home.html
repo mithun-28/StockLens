@@ -1,0 +1,331 @@
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StockLens - Stock Viewer</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fa;
+            color: #222;
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+.navbar h1 {
+    font-size: 1.3rem;
+    margin: 0;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: background 0.3s;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+
+        h1.page-title {
+            text-align: center;
+            color: #34495e;
+            font-size: 2.5rem;
+            margin: 20px 0 30px;
+            font-weight: 500;
+        }
+
+        .form-box {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-box input, .form-box button {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin-bottom: 18px;
+            font-size: 15px;
+        }
+
+        .form-box button {
+            background: #2980b9;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+        .form-box button:hover {
+            background: #1f6391;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        td {
+            background: #fbfbfb;
+            border-top: 1px solid #eee;
+        }
+
+        .error {
+            color: #c0392b;
+            font-size: 16px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .sentiment-advice {
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .positive {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .negative {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+
+        .neutral {
+            background-color: #f7f7f7;
+            color: #555;
+        }
+
+        .news-articles {
+            margin-top: 40px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .news-articles h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .news-articles ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .news-articles li {
+            background: #f9f9f9;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e3e3e3;
+            transition: background 0.3s ease;
+        }
+
+        .news-articles li:hover {
+            background: #f1f1f1;
+        }
+
+        .news-articles a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .news-articles small {
+            color: #888;
+            font-size: 12px;
+        }
+
+        h2, h3 {
+            color: #2c3e50;
+            margin-top: 40px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        label {
+            font-weight: 500;
+            color: #444;
+        }
+
+        input[type="date"] {
+            background: #fff;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>StockLens</h1>
+    <a href="{% url 'about' %}">About</a>
+</div>
+
+<h1 class="page-title">StockLens🔎</h1>
+
+<div class="form-box">
+    <form method="get" action="{% url 'get_stock_data' %}">
+        <label for="symbol">Enter Indian Stock Symbol (e.g., TCS, INFY):</label>
+        <input type="text" name="symbol" id="symbol" required placeholder="Stock Symbol">
+        <button type="submit">Get Stock Data</button>
+    </form>
+</div>
+
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+
+{% if symbol %}
+    <h2 class="text-center">{{ symbol }}</h2>
+
+    {% if stock_data %}
+        <h3>Company Information</h3>
+        <table>
+            {% for key, value in stock_data.items %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <h3>📈 Stock Price Movement (Last 1 Month)</h3>
+    <div>{{ graph|safe }}</div>
+
+    <h3>📅 Predict Future Price</h3>
+    <form method="get" action="{% url 'get_stock_data' %}">
+        <input type="hidden" name="symbol" value="{{ symbol|slice:":-3" }}">
+        <label for="date">Select Future Date:</label>
+        <input type="date" name="date" required>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+        <h3>🔮 Prediction for {{ prediction.date }}</h3>
+        <table>
+            <tr>
+                <th>Model</th>
+                <th>Predicted Price (INR)</th>
+                <th>Insight</th>
+            </tr>
+            <tr>
+                <td>Weighted Moving Average</td>
+                <td>{{ prediction.wma_price }}</td>
+                <td>{{ prediction.wma_advice }}</td>
+            </tr>
+            <tr>
+                <td>ARIMA</td>
+                <td>{{ prediction.arima_price }}</td>
+                <td>{{ prediction.arima_advice }}</td>
+            </tr>
+            <tr>
+                <td>Hybrid (Avg. of ARIMA & WMA)</td>
+                <td>{{ prediction.hybrid_price }}</td>
+                <td>{{ prediction.hybrid_advice }}</td>
+            </tr>
+        </table>
+
+        <h3>📊 Prediction Graph</h3>
+        <div>{{ prediction.prediction_graph|safe }}</div>
+
+        <div class="sentiment-advice {% if prediction.sentiment_advice == '🟢 Positive news – Price is likely to go up!' %}positive{% elif prediction.sentiment_advice == '🔴 Negative news – Price might decrease.' %}negative{% else %}neutral{% endif %}">
+            <strong>Sentiment Impact:</strong> {{ prediction.sentiment_advice }}<br>
+            <strong>Adjusted Price: ₹{{ prediction.adjusted_price }}</strong>
+        </div>
+    {% endif %}
+
+    {% if news_articles %}
+        <div class="news-articles">
+            <h3>📰 Recent News About {{ stock_data|get_item:"Company Name" }}</h3>
+            <ul>
+                {% for article in news_articles %}
+                    <li>
+                        <a href="{{ article.link }}" target="_blank">{{ article.title }}</a><br>
+                        <small>Published: {{ article.published }}</small><br>
+                        <strong>Sentiment: {{ article.sentiment }}</strong><br>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endif %}
+
+{% if prediction %}
+    <h3>📅 ARIMA Predictions – 3 Days Before & After {{ prediction.date }}</h3>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>ARIMA Predicted Price (INR)</th>
+            <th>Hybrid Predicted Price (INR)</th>
+        </tr>
+        {% for row in prediction.multi_day_predictions %}
+            <tr>
+                <td>{{ row.date }}</td>
+                <td>{{ row.arima }}</td>
+                <td>{{ row.hybrid }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+</body>
+</html>

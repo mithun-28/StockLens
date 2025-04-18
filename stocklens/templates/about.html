@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About StockLens</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #121212, #1c1c1c);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: #00aaff;
+            padding: 20px;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 4px #000;
+            animation: fadeInDown 2s ease-in-out;
+        }
+
+        section {
+            padding: 60px 40px;
+            max-width: 1000px;
+            margin: auto;
+            line-height: 1.8;
+            animation: fadeInUp 2s ease-in-out;
+        }
+
+        .highlight {
+            color: #00aaff;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background: #00aaff;
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+        }
+
+        .fade-section {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .fade-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #0e0e0e;
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        Welcome to StockLens
+    </header>
+
+    <section class="fade-section">
+        <h2 class="section-title">📌 About StockLens</h2>
+        <p>
+            <span class="highlight">StockLens</span> is an intelligent and user-friendly stock analysis web application designed to empower Indian stock market enthusiasts. Whether you're a beginner or a seasoned trader, StockLens gives you the tools to make smarter investment decisions.
+        </p>
+    </section>
+
+    <section class="fade-section">
+        <h2 class="section-title">⚙️ Features Explained</h2>
+        <p><span class="highlight">🔎 Real-Time Stock Lookup:</span> Enter any Indian stock symbol (like TCS, INFY, RELIANCE), and get up-to-date company information including market cap, PE ratio, dividend yield, and more.</p>
+        <p><span class="highlight">📈 Price Chart:</span> A dynamic Plotly-based graph shows the past month’s price movements with a smooth dark theme interface.</p>
+        <p><span class="highlight">🔮 Future Predictions:</span> Predict future stock prices using two models:
+            <ul>
+                <li><b>Weighted Moving Average</b> - for trend-based predictions.</li>
+                <li><b>ARIMA</b> - for time-series forecasting.</li>
+            </ul>
+        </p>
+        <p><span class="highlight">🧠 Hybrid Analysis:</span> Combines both WMA and ARIMA for a smarter forecast and offers <b>buy/sell suggestions</b> based on model insights.</p>
+        <p><span class="highlight">📰 Sentiment Analysis:</span> Visualizes how recent news sentiment (positive/negative) affects stock behavior.</p>
+    </section>
+
+    <section class="fade-section">
+        <h2 class="section-title">👨‍💻 Created By</h2>
+        <p>
+            This project was proudly built by <span class="highlight">Mithun</span> using <b>Django</b>, <b>YFinance</b>, <b>Plotly</b>, and <b>ARIMA modeling</b>. It blends data science with web development to create a seamless stock exploration experience.
+        </p>
+    </section>
+
+    <footer>
+        &copy; 2025 StockLens | Built with ❤️ by Your Mithun
+    </footer>
+
+    <script>
+        // Scroll animation
+        const faders = document.querySelectorAll('.fade-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.2,
+        });
+
+        faders.forEach(fadeSection => {
+            observer.observe(fadeSection);
+        });
+    </script>
+
+</body>
+</html>
